@@ -1,25 +1,17 @@
 <?php
-session_start();
-require('dbconnect.php');
-
-if(isset($_GET)) {
-$sql = 'SELECT * FROM `tweets` WHERE `tweet_id`=?';
-$data = array($_GET['tweet_id']);
-$stmt = $dbh->prepare($sql);
-$stmt->execute($data);
-$tweet_edit = $stmt->fetch(PDO::FETCH_ASSOC);
-
-}
-
-if(!enpty($_POST)){
-$sql = 'UPDATE `tweets` SET `tweet`=? , `modified`=NOW() WHERE `tweet_id`=?';
-$data = array($_POST['tweet'], $_GET['tweet_id']);
-$stmt = $dbh->prepare($sql);
-$stmt->execute($data);
-
-header('Location: index.php');
-exit();
-}
+  // DBの接続
+    require('dbconnect.php');
+  //削除したいtweet_id
+  $delete_tweet_id = $_GET['tweet_id'];
+  // 論理削除用のUPDATE文
+  $sql = 'UPDATE `tweets` SET `delete_flag`=1 WHERE `tweet_id`=?';
+  $data = array($delete_tweet_id);
+  // SQL実行
+  $stmt = $dbh->prepare($sql);
+  $stmt->execute($data);
+  // 一覧画面に戻る
+  header("Location: index.php");
+  exit();
 ?>
 
 
@@ -70,7 +62,7 @@ exit();
         <h4>つぶやき編集</h4>
         <div class="msg">
           <form method="POST" action="" class="form-horizontal" role="form">
-             
+
             <ul class="paging">
               <input type="submit" class="btn btn-info" value="更新">
             </ul>
